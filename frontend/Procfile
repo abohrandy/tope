@@ -1,0 +1,2 @@
+build: npm run build
+start: npx serve -s dist -l ${PORT:-5173}
