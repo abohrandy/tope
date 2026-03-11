@@ -1,5 +1,4 @@
-"""Application configuration loaded from environment variables."""
-
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -12,6 +11,14 @@ class Settings(BaseSettings):
     SENDER_EMAIL: str = ""
     DIGEST_HOUR: int = 7
     DIGEST_MINUTE: int = 0
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def fix_postgres_scheme(cls, v: str) -> str:
+        """SQLAlchemy requires 'postgresql://' instead of 'postgres://'."""
+        if v and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
 
     class Config:
         env_file = ".env"
